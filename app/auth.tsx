@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, View, ScrollView } from "react-native";
 import { Button, Text, TextInput, useTheme, Snackbar } from "react-native-paper";
-
+import { Image } from "react-native";
 export default function AuthScreen() {
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
@@ -97,6 +97,13 @@ export default function AuthScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.content}>
+            <View style={styles.containerr}>
+      <Image
+        source={require('../assets/images/plogo.png')}
+        style={styles.logo}
+      />
+    </View>
+
             <Text style={styles.title} variant="headlineMedium">
               {isSignUp ? "Create Account" : "Welcome Back"}
             </Text>
@@ -155,6 +162,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f5f5f5",
   },
+  containerr: {
+    flex: 1, // Take full height of screen
+    justifyContent: 'center', // Vertical center
+    alignItems: 'center',     // Horizontal center
+  },
+  logo: {
+    width: 150,
+    height: 150,
+  },
   keyboardAvoidingView: {
     flex: 1,
   },
@@ -174,6 +190,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   button: {
+    color: '#ff79c6',
     marginTop: 8,
     paddingVertical: 8,
   },
@@ -182,6 +199,7 @@ const styles = StyleSheet.create({
   },
   switchModeButton: {
     marginTop: 16,
+    
   },
   switchModeButtonLabel: {
     fontSize: 14,
