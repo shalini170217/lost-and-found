@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { ID, Models } from "react-native-appwrite";
-import { account } from "./appwrite";
+import { account } from "./appwrite"; // Ensure this comes from a singleton setup
+import { router } from "expo-router";
 
 type AuthContextType = {
   user: Models.User<Models.Preferences> | null;
@@ -13,10 +14,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<Models.User<Models.Preferences> | null>(
-    null
-  );
-
+  const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState<boolean>(true);
 
   useEffect(() => {
@@ -26,8 +24,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const getUser = async () => {
     try {
       const session = await account.get();
+      console.log("✅ User session loaded:", session);
       setUser(session);
-    } catch (error) {
+    } catch (error: any) {
+      console.log("⚠️ No active session:", error.message);
       setUser(null);
     } finally {
       setIsLoadingUser(false);
@@ -43,10 +43,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error instanceof Error) {
         return error.message;
       }
-
-      return "An error occured during signup";
+      return "An error occurred during sign up.";
     }
   };
+
   const signIn = async (email: string, password: string) => {
     try {
       await account.createEmailPasswordSession(email, password);
@@ -57,17 +57,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error instanceof Error) {
         return error.message;
       }
-
-      return "An error occured during sign in";
+      return "An error occurred during sign in.";
     }
   };
 
   const signOut = async () => {
     try {
       await account.deleteSession("current");
+      console.log("✅ Signed out successfully");
+    } catch (error: any) {
+      console.log("⚠️ Sign out failed:", error.message);
+    } finally {
       setUser(null);
-    } catch (error) {
-      console.log(error);
+      router.replace("/auth"); // 👈 Redirect to auth/login page
     }
   };
 
@@ -83,8 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be inside of the AuthProvider");
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-
   return context;
 }

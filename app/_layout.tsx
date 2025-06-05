@@ -1,32 +1,25 @@
 import { AuthProvider } from "@/lib/auth-context";
-import { Stack, useRouter } from "expo-router";
-import { useEffect } from "react";
-
-function RouteGuard({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const isAuth = false;
-
-  useEffect(() => {
-    if (!isAuth) {
-      // Use setTimeout to ensure navigation happens after mount
-      const timer = setTimeout(() => {
-        router.replace("/auth");
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [isAuth, router]);
-
-  return <>{children}</>;
-}
+import { Stack } from "expo-router";
+import { PaperProvider } from "react-native-paper";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function RootLayout() {
   return (
     <AuthProvider>
-    <RouteGuard>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-    </RouteGuard>
+      <PaperProvider>
+        <SafeAreaProvider>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen 
+              name="auth" 
+              options={{ 
+                headerTitle: "Access Your Account",
+                headerTitleAlign: "center",
+              }} 
+            />
+          </Stack>
+        </SafeAreaProvider>
+      </PaperProvider>
     </AuthProvider>
   );
 }
